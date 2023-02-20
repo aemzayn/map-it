@@ -1,11 +1,11 @@
 import { type NextPage } from "next";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import Head from "next/head";
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
-  console.log(session);
 
   function handleSignin() {
     signIn("discord").catch((error) => {
@@ -54,10 +54,13 @@ const Home: NextPage = () => {
           </div>
         )}
       </nav>
-      <main className="my-auto flex flex-1 items-center justify-center ">
-        <h1 className="m-auto pb-20 text-9xl font-bold italic text-white">
-          Map It!
-        </h1>
+      <main className="my-auto flex flex-1 flex-col items-center justify-center gap-10">
+        <h1 className="text-9xl font-bold italic text-white">Map It!</h1>
+        {session && (
+          <button className="rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 px-20 py-3 text-lg text-white">
+            <Link href="/map">Get Started</Link>
+          </button>
+        )}
       </main>
     </div>
   );

@@ -1,0 +1,14 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "map-it",
+      "database": "map-it-trpc",
+      "username": "postgres",
+      "password": "postgres"
+    }
+  ]
+}
