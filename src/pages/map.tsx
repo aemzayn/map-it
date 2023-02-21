@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 const MapContainer = dynamic(
-  () => import("../components/map/index").then((mod) => mod.default),
+  () => import("../components/map-container").then((mod) => mod.default),
   {
     ssr: false,
   }
