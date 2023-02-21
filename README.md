@@ -1,3 +1,3 @@
 # Map-it!
 
-Coming soon
+Map based blog using React Leaflet and T3 Stack
