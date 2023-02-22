@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { MapContainer as LeafletMap, Marker, TileLayer } from "react-leaflet";
 import L, { type LatLng } from "leaflet";
-import "leaflet/dist/leaflet.css";
-
 import Sidebar from "./sidebar";
 import AddButton from "./add-button";
 import MapEvents from "./map-events";
-
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { api } from "../utils/api";
+import BlogMarker from "./blog-marker";
+import "leaflet/dist/leaflet.css";
 
 const DefaultIcon = L.icon({
   iconUrl: icon as unknown as string,
@@ -31,7 +30,11 @@ export default function MapContainer() {
     iconSize: [14, 22],
   });
 
-  const { data: markers } = api.blog.getMarkers.useQuery();
+  const { data: markers, refetch } = api.blog.getMarkers.useQuery();
+
+  async function refetchMarkers() {
+    await refetch();
+  }
 
   return (
     <div className="relative min-h-full w-full overflow-hidden bg-red-50">
@@ -48,26 +51,20 @@ export default function MapContainer() {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {markers?.map((marker) => (
-          <Marker
-            key={marker.id}
-            position={[marker.latitude, marker.longitude]}
-            icon={icon}
-          />
+          <BlogMarker key={marker.id} blog={marker} />
         ))}
-        {coord && (
-          <Marker
-            position={coord}
-            icon={icon}
-            eventHandlers={{
-              click: () => {
-                setShow(true);
-              },
-            }}
-          />
-        )}
+
+        {coord && <Marker position={coord} icon={icon} />}
       </LeafletMap>
-      <AddButton show={show} setShow={setShow} />
-      <Sidebar show={show} coord={coord} />
+
+      <AddButton show={show} setShow={setShow} setCoord={setCoord} />
+
+      <Sidebar
+        show={show}
+        coord={coord}
+        setCoord={setCoord}
+        refetchMarkers={refetchMarkers}
+      />
     </div>
   );
 }

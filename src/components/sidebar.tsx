@@ -1,4 +1,5 @@
-import { useRef } from "react";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { type Dispatch, type SetStateAction, useRef } from "react";
 import classNames from "classnames";
 import type { LatLng } from "leaflet";
 import { api } from "../utils/api";
@@ -6,9 +7,16 @@ import { api } from "../utils/api";
 type SidebarProps = {
   show: boolean;
   coord: LatLng | undefined;
+  setCoord: Dispatch<SetStateAction<L.LatLng | undefined>>;
+  refetchMarkers: () => Promise<void>;
 };
 
-export default function Sidebar({ show, coord }: SidebarProps) {
+export default function Sidebar({
+  show,
+  coord,
+  setCoord,
+  refetchMarkers,
+}: SidebarProps) {
   const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
@@ -29,8 +37,15 @@ export default function Sidebar({ show, coord }: SidebarProps) {
       latitude,
       longitude,
     })
-      .then((data) => {
+      .then(async (data) => {
         console.log(data);
+
+        // Reset form
+        titleRef.current!.value = "";
+        contentRef.current!.value = "";
+        setCoord(undefined);
+
+        await refetchMarkers();
       })
       .catch((err) => {
         console.log(err);
@@ -40,37 +55,32 @@ export default function Sidebar({ show, coord }: SidebarProps) {
   return (
     <aside
       className={classNames(
-        "absolute right-0 top-0 bottom-0 z-[1000] col-span-1 w-96 overflow-y-auto bg-slate-700 py-10 px-5 text-lg  drop-shadow-xl transition-all duration-300 ease-in-out",
+        "absolute right-0 top-0 bottom-0 z-[1000] col-span-1 w-96 overflow-y-auto bg-gray-100 py-10 px-5 text-lg  drop-shadow-xl transition-all duration-300 ease-in-out",
         show ? "translate-x-0" : "translate-x-full"
       )}
     >
       <form className="w-fullf my-2 space-y-2" onSubmit={onSubmit}>
-        <h1 className="text-white">Create</h1>
+        <h1 className="text-2xl font-semibold">Create</h1>
         <input
           type="text"
-          className="form-input w-full rounded-md"
+          className="form-input w-full rounded-sm border-gray-300"
           placeholder="Title"
           ref={titleRef}
           required
         />
 
         <textarea
-          className="form-textarea w-full rounded-md"
+          className="form-textarea w-full rounded-sm border-gray-300"
           placeholder="Content"
           ref={contentRef}
+          rows={7}
           required
         />
 
-        <div className="mt-5 flex flex-col gap-2 text-sm">
-          {coord && (
-            <div className="bg-gray-500 p-1">
-              <p>Lat: {coord.lat}</p>
-              <p>Long: {coord.lng}</p>
-            </div>
-          )}
-        </div>
-
-        <button type="submit" className="w-full bg-gray-600 p-2 text-gray-100">
+        <button
+          type="submit"
+          className="duration-250 w-full rounded-sm border-gray-900 bg-blue-400 p-2 text-white transition-colors ease-in-out hover:bg-blue-500"
+        >
           Create
         </button>
       </form>

@@ -54,6 +54,7 @@ const Home: NextPage = () => {
           </div>
         )}
       </nav>
+
       <main className="my-auto flex flex-1 flex-col items-center justify-center gap-10">
         <h1 className="text-9xl font-bold italic text-white">Map It!</h1>
         {session && (

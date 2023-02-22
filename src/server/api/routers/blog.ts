@@ -1,18 +1,10 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { blogInputSchema } from "../../../schema/blog.schema";
 
 export const blogRouter = createTRPCRouter({
   createBlog: protectedProcedure
-    .input(
-      z.object({
-        title: z.string(),
-        content: z.string(),
-        latitude: z.number(),
-        longitude: z.number(),
-      })
-    )
+    .input(blogInputSchema)
     .mutation(async ({ input, ctx }) => {
       try {
         const userId = ctx.session.user.id;
@@ -39,7 +31,15 @@ export const blogRouter = createTRPCRouter({
   getMarkers: publicProcedure.query(async ({ ctx }) => {
     try {
       const blogMarkers = await ctx.prisma.blog.findMany({
-        select: { latitude: true, longitude: true, id: true, title: true },
+        select: {
+          latitude: true,
+          longitude: true,
+          id: true,
+          title: true,
+          content: true,
+          authorId: true,
+          createdAt: true,
+        },
       });
       return blogMarkers;
     } catch (error) {
